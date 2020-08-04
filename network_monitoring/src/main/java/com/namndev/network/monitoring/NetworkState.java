@@ -4,7 +4,7 @@ import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 
-import com.namndev.network.monitoring.core.NetworkEvent;
+import com.namndev.network.monitoring.events.NetworkEvent;
 
 public interface NetworkState {
 
@@ -38,15 +38,15 @@ public interface NetworkState {
     default boolean isMobile() {
         return getNetworkCapabilities() != null && getNetworkCapabilities().hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
     }
+
     /**
      * Get the interface name ( shortcut )
      */
-    default String interfaceName() {
+    default String getInterfaceName() {
         return getLinkProperties() != null ? getLinkProperties().getInterfaceName() : null;
     }
 
-
-    public interface NetworkStateCallback {
+    interface NetworkStateCallback {
         void callback(NetworkState state, NetworkEvent event);
     }
 }

@@ -1,4 +1,4 @@
-package com.namndev.network.monitoring.core;
+package com.namndev.network.monitoring;
 
 import android.app.Activity;
 import android.os.Build;
@@ -8,11 +8,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
-
-import com.namndev.network.monitoring.ConnectivityEvent;
-import com.namndev.network.monitoring.ConnectivityStateHolder;
-import com.namndev.network.monitoring.NetworkConnectivityListener;
-import com.namndev.network.monitoring.NetworkEvents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +33,11 @@ public class NUtils {
      */
     public static <T> List<T> filter(@NonNull Iterable<T> list, NPre<T, Boolean> predicate) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-           return StreamSupport.stream(list.spliterator(), false)
-                   .filter(predicate::get).collect(Collectors.toList());
+            return StreamSupport.stream(list.spliterator(), false)
+                    .filter(predicate::get).collect(Collectors.toList());
         else {
             List<T> col = new ArrayList<>();
-            for (T t: list)
+            for (T t : list)
                 if (predicate.get(t))
                     col.add(t);
             return col;
@@ -53,7 +48,7 @@ public class NUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             list.forEach(action::accept);
         else {
-            for (T t: list) {
+            for (T t : list) {
                 action.accept(t);
             }
         }
@@ -72,12 +67,10 @@ public class NUtils {
     }
 
     public static void onListenerCreated(NetworkConnectivityListener ncl) {
-
-        NetworkEvents.getInstance().observe((LifecycleOwner) ncl, connectivityEvent -> {
+        NetworkLiveData.getInstance().observe((LifecycleOwner) ncl, connectivityEvent -> {
             if (getPreviousState(ncl) != null)
                 ncl.networkConnectivityChanged(connectivityEvent);
         });
-
     }
 
 
@@ -95,19 +88,19 @@ public class NUtils {
     }
 
     public static void setPreviousState(NetworkConnectivityListener ncl, boolean value) {
-        if(ncl instanceof Fragment){
+        if (ncl instanceof Fragment) {
             Fragment f = (Fragment) ncl;
             Bundle a = f.getArguments();
-            if( a == null) {
+            if (a == null) {
                 a = new Bundle();
             }
             a.putInt(ID_KEY, value ? 1 : 0);
             f.setArguments(a);
         }
-        if(ncl instanceof Activity){
+        if (ncl instanceof Activity) {
             Activity act = (Activity) ncl;
             Bundle a = act.getIntent().getExtras();
-            if( a ==null) {
+            if (a == null) {
                 a = new Bundle();
             }
             a.putInt(ID_KEY, value ? 1 : 0);
@@ -116,20 +109,20 @@ public class NUtils {
     }
 
     public static Boolean getPreviousState(NetworkConnectivityListener ncl) {
-        if(ncl instanceof Fragment){
+        if (ncl instanceof Fragment) {
             Fragment f = (Fragment) ncl;
             Bundle a = f.getArguments();
-            if(a == null) return null;
+            if (a == null) return null;
             int value = a.getInt(ID_KEY, -1);
-            if(value == -1) return null;
+            if (value == -1) return null;
             return value == 1;
         }
-        if(ncl instanceof Activity){
+        if (ncl instanceof Activity) {
             Activity act = (Activity) ncl;
             Bundle a = act.getIntent().getExtras();
-            if(a == null) return null;
+            if (a == null) return null;
             int value = a.getInt(ID_KEY, -1);
-            if(value == -1) return null;
+            if (value == -1) return null;
             return value == 1;
         }
         return null;

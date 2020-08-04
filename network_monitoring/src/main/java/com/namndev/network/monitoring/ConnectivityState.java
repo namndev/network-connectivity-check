@@ -1,8 +1,6 @@
 package com.namndev.network.monitoring;
 
 
-import com.namndev.network.monitoring.core.NUtils;
-
 public interface ConnectivityState {
 
     /**
@@ -10,7 +8,7 @@ public interface ConnectivityState {
      * True if the device has a available network
      */
     default boolean isConnected() {
-        return !NUtils.filter(networkStats(),NetworkState::isAvailable).isEmpty();
+        return !NUtils.filter(networkStats(), NetworkState::isAvailable).isEmpty();
     }
 
     /**

@@ -2,13 +2,13 @@ package com.namndev.network.monitoring;
 
 public class ConnectivityEvent {
 
-    private final boolean isConnected;
+    private final boolean connected;
 
-    public ConnectivityEvent(boolean isConnected) {
-        this.isConnected = isConnected;
+    public ConnectivityEvent(boolean connected) {
+        this.connected = connected;
     }
 
     public boolean isConnected() {
-        return this.isConnected;
+        return this.connected;
     }
 }

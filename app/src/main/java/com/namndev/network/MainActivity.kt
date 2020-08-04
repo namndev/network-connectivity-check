@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.namndev.network.monitoring.ConnectivityEvent
 import com.namndev.network.monitoring.ConnectivityStateHolder
-import com.namndev.network.monitoring.NetworkEvents
+import com.namndev.network.monitoring.NetworkLiveData
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         wifi_off_icon.visibility = if (!ConnectivityStateHolder.getInstance().isConnected) View.VISIBLE else View.GONE
 
-        NetworkEvents.getInstance().observe(this, Observer {
+        NetworkLiveData.getInstance().observe(this, Observer {
             if (it is ConnectivityEvent)
                 handleConnectivityChange()
         })

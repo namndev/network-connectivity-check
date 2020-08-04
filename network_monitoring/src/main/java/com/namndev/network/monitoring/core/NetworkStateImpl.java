@@ -9,10 +9,14 @@ import androidx.annotation.Nullable;
 
 import com.namndev.network.monitoring.ConnectivityStateHolder;
 import com.namndev.network.monitoring.NetworkState;
+import com.namndev.network.monitoring.events.AvailabilityEvent;
+import com.namndev.network.monitoring.events.LinkPropertyChangeEvent;
+import com.namndev.network.monitoring.events.NetworkCapabilityEvent;
+import com.namndev.network.monitoring.events.NetworkEvent;
 
-public final class NetworkStateImp implements NetworkState {
+public final class NetworkStateImpl implements NetworkState {
 
-    private final NetworkEvent.NetworkEventNotify notify;
+    private final NetworkStateCallback callback;
 
     private boolean isAvailable;
     @Nullable
@@ -22,6 +26,14 @@ public final class NetworkStateImp implements NetworkState {
     @Nullable
     private NetworkCapabilities networkCapabilities;
 
+    public NetworkStateImpl(@NonNull NetworkStateCallback callback) {
+        this.callback = callback;
+    }
+
+    private void notify(NetworkEvent event) {
+        callback.callback(this, event);
+    }
+
     @Override
     public boolean isAvailable() {
         return this.isAvailable;
@@ -29,10 +41,9 @@ public final class NetworkStateImp implements NetworkState {
 
     public void setAvailable(boolean value) {
         boolean old = this.isAvailable;
-        ConnectivityStateHolder var10000 = ConnectivityStateHolder.getInstance();
-        boolean odlIConnected = var10000.isConnected();
+        boolean odlIConnected = ConnectivityStateHolder.getInstance().isConnected();
         this.isAvailable = value;
-        this.notify.notify(new NetworkEvent.AvailabilityEvent((NetworkState)this, old, odlIConnected));
+        notify(new AvailabilityEvent(this, old, odlIConnected));
     }
 
     @Nullable
@@ -40,8 +51,8 @@ public final class NetworkStateImp implements NetworkState {
         return this.network;
     }
 
-    public void setNetwork(@Nullable Network var1) {
-        this.network = var1;
+    public void setNetwork(@Nullable Network network) {
+        this.network = network;
     }
 
     @Nullable
@@ -52,7 +63,7 @@ public final class NetworkStateImp implements NetworkState {
     public void setLinkProperties(@Nullable LinkProperties value) {
         LinkProperties old = this.linkProperties;
         this.linkProperties = value;
-        this.notify.notify(new NetworkEvent.LinkPropertyChangeEvent((NetworkState)this, old));
+        notify(new LinkPropertyChangeEvent(this, old));
     }
 
     @Nullable
@@ -63,11 +74,6 @@ public final class NetworkStateImp implements NetworkState {
     public void setNetworkCapabilities(@Nullable NetworkCapabilities value) {
         NetworkCapabilities old = this.networkCapabilities;
         this.networkCapabilities = value;
-        this.notify.notify(new NetworkEvent.NetworkCapabilityEvent((NetworkState)this, old));
+        notify(new NetworkCapabilityEvent(this, old));
     }
-
-    public NetworkStateImp(@NonNull NetworkStateCallback callback) {
-        this.notify = event -> callback.callback(NetworkStateImp.this, event);
-    }
-
 }

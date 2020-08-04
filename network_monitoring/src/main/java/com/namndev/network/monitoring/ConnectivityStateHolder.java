@@ -6,18 +6,17 @@ import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 
-import com.namndev.network.monitoring.core.ActivityLifecycleCallbacksImp;
-import com.namndev.network.monitoring.core.NetworkCallbackImp;
-import com.namndev.network.monitoring.core.NetworkEvent;
-import com.namndev.network.monitoring.core.NetworkStateImp;
+import com.namndev.network.monitoring.core.ActivityLifecycleCallbacksImpl;
+import com.namndev.network.monitoring.core.NetworkCallbackImpl;
+import com.namndev.network.monitoring.core.NetworkStateImpl;
+import com.namndev.network.monitoring.events.AvailabilityEvent;
+import com.namndev.network.monitoring.events.NetworkEvent;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.namndev.network.monitoring.core.NUtils;
-
-public class ConnectivityStateHolder implements ConnectivityState {
+public final class ConnectivityStateHolder implements ConnectivityState {
 
     private Set<NetworkState> networkStates = new HashSet<>();
 
@@ -28,15 +27,16 @@ public class ConnectivityStateHolder implements ConnectivityState {
 
 
     private void networkEventHandler(NetworkState state, NetworkEvent event) {
-        if(event instanceof NetworkEvent.AvailabilityEvent){
-            if (isConnected() != ((NetworkEvent.AvailabilityEvent) event).getOldNetworkAvailability()) {
-                NetworkEvents.getInstance().notify(new ConnectivityEvent(state.isAvailable()));
+        if (event instanceof AvailabilityEvent) {
+            if (isConnected() != ((AvailabilityEvent) event).getOldNetworkAvailability()) {
+                NetworkLiveData.getInstance().notify(new ConnectivityEvent(state.isAvailable()));
             }
         }
     }
 
     /**
      * This starts the broadcast of network events to NetworkState and all Activity implementing NetworkConnectivityListener
+     *
      * @see NetworkState
      * @see NetworkConnectivityListener
      */
@@ -44,26 +44,25 @@ public class ConnectivityStateHolder implements ConnectivityState {
 
     public void registerConnectivityBroadcaster(Application application) {
         //register the Activity Broadcaster
-        application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacksImp());
+        application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacksImpl());
 
         //get connectivity manager
         ConnectivityManager connectivityManager =
-                (ConnectivityManager)application.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NUtils.forEach(Arrays.asList(
                 new NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build(),
                 new NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build()
         ), req -> {
-            NetworkStateImp stateHolder = new NetworkStateImp(this::networkEventHandler);
+            NetworkStateImpl stateHolder = new NetworkStateImpl(this::networkEventHandler);
             networkStates.add(stateHolder);
-            connectivityManager.registerNetworkCallback(req, new NetworkCallbackImp(stateHolder));
+            connectivityManager.registerNetworkCallback(req, new NetworkCallbackImpl(stateHolder));
         });
     }
 
     public static ConnectivityStateHolder getInstance() {
         return ConnectivityStateHolderHelper.INSTANCE;
     }
-
 
     private static class ConnectivityStateHolderHelper {
         private static final ConnectivityStateHolder INSTANCE = new ConnectivityStateHolder();
