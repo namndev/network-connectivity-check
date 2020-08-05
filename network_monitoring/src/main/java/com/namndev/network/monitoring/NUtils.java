@@ -14,7 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class NUtils {
+public final class NUtils {
+
+    private NUtils() {
+        throw new IllegalArgumentException("Do not create instance me");
+    }
 
     private static final String ID_KEY = "network.monitoring.previousState";
 
@@ -87,6 +91,9 @@ public class NUtils {
         }
     }
 
+    /**
+     * This property serves as a flag to detect if this activity lost network
+     */
     public static void setPreviousState(NetworkConnectivityListener ncl, boolean value) {
         if (ncl instanceof Fragment) {
             Fragment f = (Fragment) ncl;
@@ -108,6 +115,9 @@ public class NUtils {
         }
     }
 
+    /**
+     * This property serves as a flag to detect if this activity lost network
+     */
     public static Boolean getPreviousState(NetworkConnectivityListener ncl) {
         if (ncl instanceof Fragment) {
             Fragment f = (Fragment) ncl;
@@ -128,7 +138,9 @@ public class NUtils {
         return null;
     }
 
-
+    /**
+     * just like runCatching in kotlin but without result
+     */
     public static void safeRun(String tag, NFunctional functional) {
         try {
             //register to network events

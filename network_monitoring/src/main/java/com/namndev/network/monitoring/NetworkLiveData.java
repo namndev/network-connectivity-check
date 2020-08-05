@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData;
  *
  * @see ConnectivityStateHolder to get current connection state
  */
-public class NetworkLiveData extends LiveData<ConnectivityEvent> {
+public final class NetworkLiveData extends LiveData<ConnectivityEvent> {
 
     private NetworkLiveData() {
     }

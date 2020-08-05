@@ -8,10 +8,14 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Implementation of ConnectivityManager.NetworkCallback,
+ * it stores every change of connectivity into NetworkState
+ */
 public final class NetworkCallbackImpl extends ConnectivityManager.NetworkCallback {
     private final NetworkStateImpl stateHolder;
 
-    private static final String TAG = "NetworkCallbackImp";
+    private static final String TAG = "NetworkCallbackImpl";
 
 
     public NetworkCallbackImpl(@NonNull NetworkStateImpl stateHolder) {
@@ -23,18 +27,21 @@ public final class NetworkCallbackImpl extends ConnectivityManager.NetworkCallba
         this.stateHolder.setAvailable(isAvailable);
     }
 
+    //in case of a new network ( wifi enabled ) this is called first
     @Override
     public void onAvailable(@NonNull Network network) {
         Log.i(TAG, "" + '[' + network + "] - new network");
         this.updateConnectivity(true, network);
     }
 
+    //this is called several times in a row, as capabilities are added step by step
     @Override
     public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
         Log.i(TAG, "" + '[' + network + "] - network capability changed: " + networkCapabilities);
         this.stateHolder.setNetworkCapabilities(networkCapabilities);
     }
 
+    //this is called after
     @Override
     public void onLost(@NonNull Network network) {
         Log.i(TAG, "" + '[' + network + "] - network lost");

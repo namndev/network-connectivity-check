@@ -14,6 +14,9 @@ import com.namndev.network.monitoring.events.LinkPropertyChangeEvent;
 import com.namndev.network.monitoring.events.NetworkCapabilityEvent;
 import com.namndev.network.monitoring.events.NetworkEvent;
 
+/**
+ * This is a static implementation of NetworkState, it holds the network states and is editable but it's only usable from this file.
+ */
 public final class NetworkStateImpl implements NetworkState {
 
     private final NetworkStateCallback callback;

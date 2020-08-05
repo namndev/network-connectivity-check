@@ -1,6 +1,11 @@
 package com.namndev.network.monitoring;
 
-
+/**
+ * Enables synchronous and asynchronous connectivity state checking thanks to LiveData and stored states.
+ *
+ * @see ConnectivityState#isConnected to get the instance connectivity state
+ * @see NetworkLiveData to observe connectivity changes
+ */
 public interface ConnectivityState {
 
     /**

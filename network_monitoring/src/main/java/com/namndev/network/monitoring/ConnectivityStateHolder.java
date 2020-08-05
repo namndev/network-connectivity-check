@@ -40,8 +40,6 @@ public final class ConnectivityStateHolder implements ConnectivityState {
      * @see NetworkState
      * @see NetworkConnectivityListener
      */
-
-
     public void registerConnectivityBroadcaster(Application application) {
         //register the Activity Broadcaster
         application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacksImpl());
